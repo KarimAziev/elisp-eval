@@ -281,7 +281,7 @@ Without prefix argument QUIT stay in buffer, otherwise exit."
   "Eval expression in *eval-elisp* buffer instead of minibuffer.
 
 This command makes the current buffer the target buffer of
-the elisp-eval.
+the `elisp-eval'.
 
 It displays a buffer named \"*eval-elisp*\"
 in another window.
