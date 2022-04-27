@@ -321,8 +321,5 @@ With optional INITAL-CONTENT insert it."
   :lighter " elisp-eval"
   :keymap elisp-eval-mode-map)
 
-(global-set-key [remap eval-last-sexp] 'elisp-eval-region-or-last-sexp)
-(define-key global-map (kbd "M-:") 'elisp-eval)
-
 (provide 'elisp-eval)
 ;;; elisp-eval.el ends here
