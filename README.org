@@ -15,7 +15,8 @@ the elisp-eval and displays a buffer named "*eval-elisp*" in another window.
 | C-<return> | elisp-eval--eval                | eval and stay in window         |
 | C-c C-c    | elisp-eval--eval-and-quit       | eval and exit window            |
 | C-x 0      | elisp-eval-quit                 | bury buffer                     |
-| C-x C-s    | elisp-eval-save-history         | save history                    |
+| C-x s      | elisp-eval-save-history         | save history                    |
+| C-x C-s    | elisp-eval-save-current-element | save current element            |
 | M-n        | elisp-eval-next-history-element | insert next history element     |
 | M-p        | elisp-eval-prev-history-element | insert previous history element |
 |            |                                 |                                 |

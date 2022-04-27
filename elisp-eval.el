@@ -44,7 +44,8 @@
 ;; C-<return>  `elisp-eval--eval'                - eval and stay in window
 ;; C-c C-c     `elisp-eval--eval-and-quit'       - eval and exit window
 ;; C-x 0       `elisp-eval-quit'                 - bury buffer
-;; C-x C-s     `elisp-eval-save-history'         - save history
+;; C-x s       `elisp-eval-save-history'         - save history
+;; C-x C-s     `elisp-eval-save-current-element' - save current element
 ;; M-n         `elisp-eval-next-history-element' - insert next history element
 ;; M-p         `elisp-eval-prev-history-element' - insert previous history element
 
@@ -125,6 +126,20 @@ Return the results of all forms as a list."
                           ret)))
       (end-of-file))
     (nreverse ret)))
+
+;;;###autoload
+(defun elisp-eval-save-current-element ()
+  "Save current content of \"*eval-elisp*\" buffer to `elisp-eval-history-file'."
+  (interactive)
+  (let ((elem (string-trim (buffer-substring-no-properties (point-min)
+                                                           (point-max))))
+        (history (elisp-eval-unserialize elisp-eval-history-file)))
+    (if (string-empty-p elem)
+        (message "Nothing to save")
+      (setq history (delete elem history))
+      (setq history (append history (list elem)))
+      (elisp-eval-serialize history elisp-eval-history-file)
+      (message "Saved"))))
 
 ;;;###autoload
 (defun elisp-eval-save-history ()
@@ -272,9 +287,10 @@ Without prefix argument QUIT stay in buffer, otherwise exit."
     (define-key map (kbd "M-p") 'elisp-eval-prev-history-element)
     (define-key map (kbd "M-n") 'elisp-eval-next-history-element)
     (define-key map (kbd "C-c C-c") 'elisp-eval--eval-and-quit)
-    (define-key map (kbd "C-x C-s") 'elisp-eval-save-history)
+    (define-key map (kbd "C-x s") 'elisp-eval-save-history)
+    (define-key map (kbd "C-x C-s") 'elisp-eval-save-current-element)
     map)
-  "Basic mode map.")
+  "Elisp eval mode map.")
 
 ;;;###autoload
 (defun elisp-eval (&optional inital-content)
