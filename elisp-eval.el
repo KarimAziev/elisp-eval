@@ -77,7 +77,7 @@
                                     "elisp-eval-history.history"
                                     user-emacs-directory)
   "File to save history."
-  :type 'filen
+  :type 'file
   :group 'elisp-eval)
 
 (defcustom elisp-eval-history-max-size 100
