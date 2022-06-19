@@ -2,6 +2,30 @@
 
 Eval expression in the plain buffer instead of minibuffer.
 
+** Installation
+
+*** Manually
+
+Download repository and it to your load path in your init file:
+
+#+begin_src elisp :eval no
+
+(add-to-list 'load-path "/path/to/elisp-eval/")
+
+(require 'elisp-eval)
+
+#+end_src
+
+*** With use-package and straight
+
+#+begin_src elisp :eval no
+
+(use-package elisp-eval
+  :straight (:repo "KarimAziev/elisp-eval" :type git :host github)
+  :commands (elisp-eval))
+
+#+end_src
+
 ** Commands
 
 + ~elisp-eval~
