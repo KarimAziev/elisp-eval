@@ -277,7 +277,7 @@ Without prefix argument QUIT stay in buffer, otherwise exit."
                      (setq beg (point))
                      (narrow-to-region beg end)
                      (eval-defun nil)))))
-              (t (funcall-interactively 'pp-eval-last-sexp
+              (t (funcall-interactively #'pp-eval-last-sexp
                                         nil)))))))
 
 (defvar elisp-eval-mode-map
