@@ -127,7 +127,6 @@ Return the results of all forms as a list."
       (end-of-file))
     (nreverse ret)))
 
-;;;###autoload
 (defun elisp-eval-save-current-element ()
   "Save current content of \"*eval-elisp*\" buffer to `elisp-eval-history-file'."
   (interactive)
@@ -141,14 +140,12 @@ Return the results of all forms as a list."
       (elisp-eval-serialize history elisp-eval-history-file)
       (message "Saved"))))
 
-;;;###autoload
 (defun elisp-eval-save-history ()
   "Save history."
   (interactive)
   (when elisp-eval-history-file
     (elisp-eval-serialize elisp-eval-history elisp-eval-history-file)))
 
-;;;###autoload
 (defun elisp-eval-cleanup-history ()
   "Cleanup history."
   (interactive)
@@ -156,7 +153,6 @@ Return the results of all forms as a list."
         nil)
   (elisp-eval-save-history))
 
-;;;###autoload
 (defun elisp-eval-quit ()
   "Quit the eval buffer."
   (interactive)
@@ -186,7 +182,6 @@ Return new position if changed, nil otherwise."
           (setq count (1+ count))))
       count)))
 
-;;;###autoload
 (defun elisp-eval--eval (&optional quit)
   "Eval content of buffer `elisp-eval--buffer-name'.
 Without prefix argument QUIT stay in buffer, otherwise exit."
@@ -220,7 +215,6 @@ Without prefix argument QUIT stay in buffer, otherwise exit."
       (with-current-buffer elisp-eval-target-buffer
         (elisp-eval)))))
 
-;;;###autoload
 (defun elisp-eval--eval-and-quit ()
   "Eval content of buffer `elisp-eval--buffer-name'."
   (interactive)
