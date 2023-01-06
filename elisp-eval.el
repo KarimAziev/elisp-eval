@@ -121,7 +121,7 @@ Return the results of all forms as a list."
         (while t
           (setq ret (cons (funcall (lambda (ret)
                                      (setq next (cdr ret))
-                                     (eval (car ret)))
+                                     (eval (car ret) t))
                                    (read-from-string str next))
                           ret)))
       (end-of-file))
@@ -188,7 +188,8 @@ Without prefix argument QUIT stay in buffer, otherwise exit."
   (interactive "p")
   (let ((count (with-current-buffer elisp-eval--buffer-name
                  (elisp-eval-count-sexps-in-buffer)))
-        (str (buffer-substring-no-properties (point-min) (point-max)))
+        (str (buffer-substring-no-properties (point-min)
+                                             (point-max)))
         (res))
     (setq elisp-eval-history (delete str elisp-eval-history))
     (setq elisp-eval-history (add-to-list 'elisp-eval-history str t))
