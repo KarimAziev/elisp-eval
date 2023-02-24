@@ -144,7 +144,12 @@ Return the results of all forms as a list."
   "Save history."
   (interactive)
   (when elisp-eval-history-file
-    (elisp-eval-serialize elisp-eval-history elisp-eval-history-file)))
+    (elisp-eval-serialize (if (> (length elisp-eval-history)
+                                 elisp-eval-history-max-size)
+                              (seq-take elisp-eval-history
+                                        elisp-eval-history-max-size)
+                            elisp-eval-history)
+                          elisp-eval-history-file)))
 
 (defun elisp-eval-cleanup-history ()
   "Cleanup history."
@@ -193,7 +198,6 @@ Without prefix argument QUIT stay in buffer, otherwise exit."
         (res))
     (setq elisp-eval-history (delete str elisp-eval-history))
     (setq elisp-eval-history (add-to-list 'elisp-eval-history str t))
-    (elisp-eval-ensure-history-size)
     (elisp-eval-quit)
     (setq res (pp-to-string
                (car
@@ -206,11 +210,12 @@ Without prefix argument QUIT stay in buffer, otherwise exit."
         (with-output-to-temp-buffer "*elisp-eval-output*"
           (princ res standard-output)
           (with-current-buffer standard-output
-            (emacs-lisp-mode)
-            (when (fboundp 'visual-fill-column-mode)
-              (visual-fill-column-mode))
-            (setq buffer-read-only nil)
-            (set (make-local-variable 'font-lock-verbose) nil)))
+            (let ((emacs-lisp-mode-hook nil))
+              (emacs-lisp-mode)
+              (when (fboundp 'visual-fill-column-mode)
+                (visual-fill-column-mode))
+              (setq buffer-read-only nil)
+              (set (make-local-variable 'font-lock-verbose) nil))))
       (princ res))
     (unless quit
       (with-current-buffer elisp-eval-target-buffer
