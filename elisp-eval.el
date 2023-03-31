@@ -206,7 +206,7 @@ Without prefix argument QUIT stay in buffer, otherwise exit."
                    (if (> count 1)
                        (format "(progn %s)" str)
                      str))))))
-    (if (> (length res) 800)
+    (if (> (length res) 100)
         (with-output-to-temp-buffer "*elisp-eval-output*"
           (princ res standard-output)
           (with-current-buffer standard-output
