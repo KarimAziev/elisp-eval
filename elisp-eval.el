@@ -91,7 +91,9 @@
 The saved data can be restored with `elisp-eval-unserialize'."
   (when (file-writable-p filename)
     (with-temp-file filename
-      (insert (let (print-length) (prin1-to-string data))))))
+      (insert
+       (let (print-level print-length)
+         (prin1-to-string data))))))
 
 (defun elisp-eval-unserialize (filename)
   "Read data serialized by `elisp-eval-serialize' from FILENAME."
@@ -199,27 +201,31 @@ Without prefix argument QUIT stay in buffer, otherwise exit."
     (setq elisp-eval-history (delete str elisp-eval-history))
     (setq elisp-eval-history (add-to-list 'elisp-eval-history str t))
     (elisp-eval-quit)
-    (setq res (pp-to-string
-               (car
-                (with-current-buffer elisp-eval-target-buffer
-                  (elisp-eval-string
-                   (if (> count 1)
-                       (format "(progn %s)" str)
-                     str))))))
-    (if (> (length res) 100)
-        (with-output-to-temp-buffer "*elisp-eval-output*"
-          (princ res standard-output)
-          (with-current-buffer standard-output
-            (let ((emacs-lisp-mode-hook nil))
-              (emacs-lisp-mode)
-              (when (fboundp 'visual-fill-column-mode)
-                (visual-fill-column-mode))
-              (setq buffer-read-only nil)
-              (set (make-local-variable 'font-lock-verbose) nil))))
-      (princ res))
-    (unless quit
-      (with-current-buffer elisp-eval-target-buffer
-        (elisp-eval)))))
+    (let ((print-length nil)
+          (print-level nil))
+      (setq res (pp-to-string
+                 (car
+                  (with-current-buffer
+                      elisp-eval-target-buffer
+                    (elisp-eval-string
+                     (if (> count 1)
+                         (format "(progn %s)"
+                                 str)
+                       str))))))
+      (if (> (length res) 100)
+          (with-output-to-temp-buffer "*elisp-eval-output*"
+            (princ res standard-output)
+            (with-current-buffer standard-output
+              (let ((emacs-lisp-mode-hook nil))
+                (emacs-lisp-mode)
+                (when (fboundp 'visual-fill-column-mode)
+                  (visual-fill-column-mode))
+                (setq buffer-read-only nil)
+                (set (make-local-variable 'font-lock-verbose) nil))))
+        (princ res))
+      (unless quit
+        (with-current-buffer elisp-eval-target-buffer
+          (elisp-eval))))))
 
 (defun elisp-eval--eval-and-quit ()
   "Eval content of buffer `elisp-eval--buffer-name'."
