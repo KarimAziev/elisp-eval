@@ -202,16 +202,20 @@ Without prefix argument QUIT stay in buffer, otherwise exit."
     (setq elisp-eval-history (add-to-list 'elisp-eval-history str t))
     (elisp-eval-quit)
     (let ((print-length nil)
-          (print-level nil))
-      (setq res (pp-to-string
-                 (car
-                  (with-current-buffer
-                      elisp-eval-target-buffer
-                    (elisp-eval-string
-                     (if (> count 1)
-                         (format "(progn %s)"
-                                 str)
-                       str))))))
+          (print-level nil)
+          (print-circle t)
+          (result))
+      (setq result (car
+                    (with-current-buffer
+                        elisp-eval-target-buffer
+                      (elisp-eval-string
+                       (if (> count 1)
+                           (format "(progn %s)"
+                                   str)
+                         str)))))
+      (setq res (or (ignore-errors (pp-to-string
+                                    result))
+                    (prin1-to-string result)))
       (if (> (length res) 100)
           (with-output-to-temp-buffer "*elisp-eval-output*"
             (princ res standard-output)
