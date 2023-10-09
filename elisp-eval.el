@@ -203,7 +203,7 @@ Without prefix argument QUIT stay in buffer, otherwise exit."
     (elisp-eval-quit)
     (let ((print-length nil)
           (print-level nil)
-          (print-circle t)
+          (print-circle nil)
           (result))
       (setq result (car
                     (with-current-buffer
