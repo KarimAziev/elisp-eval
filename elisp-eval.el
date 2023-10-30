@@ -3,10 +3,11 @@
 ;; Copyright (C) 2022 Karim Aziiev <karim.aziiev@gmail.com>
 
 ;; Author: Karim Aziiev <karim.aziiev@gmail.com>
-;; URL: https://github.com:KarimAziev/elisp-eval
+;; URL: https://github.com/KarimAziev/elisp-eval
 ;; Keywords: lisp
 ;; Version: 0.1.1
-;; Package-Requires: ((emacs "26.1"))
+;; Package-Requires: ((emacs "28.1"))
+;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -22,6 +23,7 @@
 ;;
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 ;;; Commentary:
 
 ;; Eval expression in plain buffer instead of minibuffer.
@@ -213,9 +215,10 @@ Without prefix argument QUIT stay in buffer, otherwise exit."
                            (format "(progn %s)"
                                    str)
                          str)))))
-      (setq res (or (ignore-errors (pp-to-string
-                                    result))
-                    (prin1-to-string result)))
+      (setq res (or
+                 (ignore-errors (pp-to-string
+                                 result))
+                 (prin1-to-string result)))
       (if (> (length res) 100)
           (with-output-to-temp-buffer "*elisp-eval-output*"
             (princ res standard-output)
@@ -292,13 +295,13 @@ Without prefix argument QUIT stay in buffer, otherwise exit."
 
 (defvar elisp-eval-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-x 0") 'elisp-eval-quit)
-    (define-key map (kbd "<C-return>") 'elisp-eval--eval)
-    (define-key map (kbd "M-p") 'elisp-eval-prev-history-element)
-    (define-key map (kbd "M-n") 'elisp-eval-next-history-element)
-    (define-key map (kbd "C-c C-c") 'elisp-eval--eval-and-quit)
-    (define-key map (kbd "C-x s") 'elisp-eval-save-history)
-    (define-key map (kbd "C-x C-s") 'elisp-eval-save-current-element)
+    (define-key map (kbd "C-x 0") #'elisp-eval-quit)
+    (define-key map (kbd "<C-return>") #'elisp-eval--eval)
+    (define-key map (kbd "M-p") #'elisp-eval-prev-history-element)
+    (define-key map (kbd "M-n") #'elisp-eval-next-history-element)
+    (define-key map (kbd "C-c C-c") #'elisp-eval--eval-and-quit)
+    (define-key map (kbd "C-x s") #'elisp-eval-save-history)
+    (define-key map (kbd "C-x C-s") #'elisp-eval-save-current-element)
     map)
   "Elisp eval mode map.")
 
@@ -336,7 +339,8 @@ With optional INITAL-CONTENT insert it."
       (when (and (bound-and-true-p flycheck-mode)
                  (fboundp 'flycheck-mode))
         (flycheck-mode -1))
-      (when (bound-and-true-p flymake-mode) (flymake-mode -1))
+      (when (bound-and-true-p flymake-mode)
+        (flymake-mode -1))
       (elisp-eval-mode)
       (when inital-content
         (insert inital-content)))))
