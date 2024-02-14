@@ -144,6 +144,17 @@ Return the results of all forms as a list."
       (elisp-eval-serialize history elisp-eval-history-file)
       (message "Saved"))))
 
+(defun elisp-eval-delete-current-element ()
+  "Delete current content of \"*eval-elisp*\" buffer to `elisp-eval-history-file'."
+  (interactive)
+  (let ((elem (string-trim (buffer-substring-no-properties (point-min)
+                                                           (point-max))))
+        (history (elisp-eval-unserialize elisp-eval-history-file)))
+    (setq elisp-eval-history (delete elem elisp-eval-history))
+    (setq history (delete elem history))
+    (elisp-eval-serialize history elisp-eval-history-file)
+    (message "Removed from history")))
+
 (defun elisp-eval-save-history ()
   "Save history."
   (interactive)
@@ -302,6 +313,7 @@ Without prefix argument QUIT stay in buffer, otherwise exit."
     (define-key map (kbd "C-c C-c") #'elisp-eval--eval-and-quit)
     (define-key map (kbd "C-x s") #'elisp-eval-save-history)
     (define-key map (kbd "C-x C-s") #'elisp-eval-save-current-element)
+    (define-key map (kbd "C-c C-d") #'elisp-eval-delete-current-element)
     map)
   "Elisp eval mode map.")
 
@@ -347,8 +359,12 @@ With optional INITAL-CONTENT insert it."
 
 ;;;###autoload
 (define-minor-mode elisp-eval-mode
-  "Runs prettier on file save when this mode is turned on."
-  :lighter " elisp-eval"
+  "Enable a minor mode with custom keybindings for evaluating Emacs Lisp.
+
+Enable or disable `elisp-eval-mode', which provides a specialized environment
+for evaluating Emacs Lisp expressions. This mode adds a lighter to the mode line
+and binds a set of keys for evaluating expressions to the `elisp-eval-mode-map'."
+  :lighter " e-e-m"
   :keymap elisp-eval-mode-map)
 
 (provide 'elisp-eval)
