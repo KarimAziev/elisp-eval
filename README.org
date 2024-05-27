@@ -1,6 +1,6 @@
 * elisp-eval
 
-Eval expression in the plain buffer instead of minibuffer.
+Evaluate the expression in the plain buffer instead of the minibuffer.
 
 ** Installation
 
@@ -58,4 +58,3 @@ the elisp-eval and displays a buffer named "*eval-elisp*" in another window.
 
 + ~elisp-eval-history-max-size~
   Max size for history.
-

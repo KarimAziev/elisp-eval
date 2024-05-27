@@ -1,4 +1,4 @@
-;;; elisp-eval.el --- Configure eval -*- lexical-binding: t -*-
+;;; elisp-eval.el --- Evaluate expressions in a dedicated buffer -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2022 Karim Aziiev <karim.aziiev@gmail.com>
 
@@ -26,7 +26,7 @@
 
 ;;; Commentary:
 
-;; Eval expression in plain buffer instead of minibuffer.
+;; Evaluate the expression in the plain buffer instead of the minibuffer.
 
 ;; Commands
 
