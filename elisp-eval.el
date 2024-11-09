@@ -182,10 +182,10 @@ Return the results of all forms as a list."
 (defun elisp-eval-backward-sexp (&optional n)
   "Move by calling FN N times.
 Return new position if changed, nil otherwise."
-  (when-let ((str-start (nth 8 (syntax-ppss (point)))))
+  (when-let* ((str-start (nth 8 (syntax-ppss (point)))))
     (goto-char str-start))
   (let ((pos (point)))
-    (when-let ((end (ignore-errors
+    (when-let* ((end (ignore-errors
                       (backward-sexp (or n 1))
                       (point))))
       (unless (= end pos)
@@ -267,7 +267,7 @@ Without prefix argument QUIT stay in buffer, otherwise exit."
   "Insert previous history content."
   (interactive)
   (erase-buffer)
-  (when-let ((str (elisp-eval-get-next-or-prev-history -1)))
+  (when-let* ((str (elisp-eval-get-next-or-prev-history -1)))
     (goto-char (point-min))
     (save-excursion (insert str))))
 
@@ -276,7 +276,7 @@ Without prefix argument QUIT stay in buffer, otherwise exit."
   "Insert next history content."
   (interactive)
   (erase-buffer)
-  (when-let ((str (elisp-eval-get-next-or-prev-history 1)))
+  (when-let* ((str (elisp-eval-get-next-or-prev-history 1)))
     (goto-char (point-min))
     (save-excursion (insert str))))
 
@@ -284,13 +284,13 @@ Without prefix argument QUIT stay in buffer, otherwise exit."
 (defun elisp-eval-region-or-last-sexp ()
   "Eval active region or sexp at point."
   (interactive)
-  (if-let ((reg (when
+  (if-let* ((reg (when
                     (and (region-active-p)
                          (use-region-p))
                   (string-trim (buffer-substring-no-properties
                                 (region-beginning) (region-end))))))
       (elisp-eval-string reg)
-    (when-let ((exp (pp-last-sexp)))
+    (when-let* ((exp (pp-last-sexp)))
       (let ((type (car exp)))
         (cond ((memq type '(defvar defcustom defconst))
                (save-excursion
