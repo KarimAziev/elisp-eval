@@ -115,21 +115,35 @@ The saved data can be restored with `elisp-eval-unserialize'."
             (seq-take elisp-eval-history elisp-eval-history-max-size)
           elisp-eval-history)))
 
+(defun elisp-eval--eval-buffer (source-buffer target-buffer)
+  "Read and evaluate all forms in SOURCE-BUFFER.
+
+Evaluate each form with TARGET-BUFFER current and return the values
+in source order.  Signal `end-of-file' when the final form is
+incomplete."
+  (with-current-buffer source-buffer
+    (save-excursion
+      (goto-char (point-min))
+      (let (results)
+        (while (progn
+                 (forward-comment most-positive-fixnum)
+                 (not (eobp)))
+          (let ((form (read (current-buffer))))
+            (push (with-current-buffer target-buffer
+                    (eval form t))
+                  results)))
+        (nreverse results)))))
+
 ;;;###autoload
 (defun elisp-eval-string (str)
   "Read and evaluate all forms in STR.
 Return the results of all forms as a list."
-  (let ((next 0)
-        ret)
-    (condition-case nil
-        (while t
-          (setq ret (cons (funcall (lambda (ret)
-                                     (setq next (cdr ret))
-                                     (eval (car ret) t))
-                                   (read-from-string str next))
-                          ret)))
-      (end-of-file))
-    (nreverse ret)))
+  (let ((target-buffer (current-buffer)))
+    (with-temp-buffer
+      (let ((emacs-lisp-mode-hook nil))
+        (emacs-lisp-mode))
+      (insert str)
+      (elisp-eval--eval-buffer (current-buffer) target-buffer))))
 
 (defun elisp-eval-save-current-element ()
   "Save current content of \"*eval-elisp*\" buffer to `elisp-eval-history-file'."
@@ -204,13 +218,13 @@ Return new position if changed, nil otherwise."
 
 (defun elisp-eval--eval (&optional quit)
   "Eval content of buffer `elisp-eval--buffer-name'.
-Without prefix argument QUIT stay in buffer, otherwise exit."
-  (interactive "p")
-  (let ((count (with-current-buffer elisp-eval--buffer-name
-                 (elisp-eval-count-sexps-in-buffer)))
-        (str (buffer-substring-no-properties (point-min)
-                                             (point-max)))
-        (res))
+When QUIT is non-nil, leave the eval buffer; otherwise reopen it."
+  (interactive)
+  (let* ((source-buffer (get-buffer elisp-eval--buffer-name))
+         (str (with-current-buffer source-buffer
+                (buffer-substring-no-properties (point-min)
+                                                (point-max))))
+         (res))
     (setq elisp-eval-history (delete str elisp-eval-history))
     (setq elisp-eval-history (add-to-list 'elisp-eval-history str t))
     (elisp-eval-quit)
@@ -218,14 +232,9 @@ Without prefix argument QUIT stay in buffer, otherwise exit."
           (print-level nil)
           (print-circle nil)
           (result))
-      (setq result (car
-                    (with-current-buffer
-                        elisp-eval-target-buffer
-                      (elisp-eval-string
-                       (if (> count 1)
-                           (format "(progn %s)"
-                                   str)
-                         str)))))
+      (setq result (car (last (elisp-eval--eval-buffer
+                               source-buffer
+                               elisp-eval-target-buffer))))
       (setq res (or
                  (ignore-errors (pp-to-string
                                  result))
